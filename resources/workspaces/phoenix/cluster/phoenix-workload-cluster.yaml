@@ -55,7 +55,7 @@ spec:
                     parameters:
                       csi.storage.k8s.io/fstype: ext4
                       description: CSI StorageClass nutanix-volume for phoenix-workload
-                      hypervisorAttached: ENABLED
+                      hypervisorAttached: DISABLED
                       storageContainer: SelfServiceContainer
                       storageType: NutanixVolumes
                     reclaimPolicy: Delete
