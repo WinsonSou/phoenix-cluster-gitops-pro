@@ -18,39 +18,37 @@ graph TD
     
     %% Clusters kustomization path
     C --> F[kustomizations/clusters]
-    F --> G[resources/workspaces/lazarus/cluster]
+    F --> PC[resources/workspaces/phoenix/cluster]
     
     %% Dependency relationship
     C -.-> |dependsOn| B
     
     %% Resources kustomization
-    E --> WL[lazarus/lazarus-workspace.yaml]
     E --> WP[phoenix/phoenix-workspace.yaml]
     
     %% Workspace directories
-    W[resources/workspaces] --> L[lazarus]
-    W --> P[phoenix]
-    
-    %% Lazarus workspace resources
-    L --> WL
-    L --> G
+    W[resources/workspaces] --> P[phoenix]
     
     %% Phoenix workspace resources
     P --> WP
-    P --> PC[phoenix/cluster]
-    
-    %% Lazarus cluster resources
-    G --> LC[lazarus-workload-cluster.yaml]
-    G --> LCRS[lazarus-crs.yaml]
-    G --> LCRSM[lazarus-crs-configmap.yaml]
+    P --> PC
     
     %% Phoenix cluster resources
+    PC --> PCKU[kustomization.yaml]
     PC --> PCC[phoenix-workload-cluster.yaml]
     PC --> PCRS[phoenix-crs.yaml]
     PC --> PCRSM[phoenix-crs-configmap.yaml]
+    PC --> N[namespaces]
+    PC --> PCRSC[phoenix-workload-pc-credentials-sealed.yaml]
+    PC --> PCRSCI[phoenix-workload-pc-credentials-for-csi-sealed.yaml]
+    PC --> PCRMIR[phoenix-workload-image-registry-mirror-credentials-sealed.yaml]
+    
+    %% Namespace resources
+    N --> ND[dev-namespace.yaml]
+    N --> NP[prod-namespace.yaml]
+    N --> NKU[kustomization.yaml]
     
     %% ClusterResourceSet relationships
-    LCRS -.-> |references| LCRSM
     PCRS -.-> |references| PCRSM
     
     %% Styling
@@ -59,14 +57,16 @@ graph TD
     classDef directory fill:#dfd,stroke:#333,stroke-width:1px
     classDef cluster fill:#ffd,stroke:#333,stroke-width:1px
     classDef crs fill:#fdb,stroke:#333,stroke-width:1px
+    classDef namespace fill:#e7f,stroke:#333,stroke-width:1px
+    classDef secret fill:#faa,stroke:#333,stroke-width:1px
     
-    class A,B,C,D,E,F kustomization
-    class W,L,P,G,PC directory
-    class WL,WP resource
-    class LC,PCC cluster
-    class LCRS,PCRS,LCRSM,PCRSM crs
+    class A,B,C,D,E,F,PCKU,NKU kustomization
+    class W,P,PC,N directory
+    class WP,ND,NP resource
+    class PCC cluster
+    class PCRS,PCRSM crs
+    class PCRSC,PCRSCI,PCRMIR secret
 ```
-
 
 Apply the following manifest to apply this to the Management Cluster.
 > Note: Make changes to the workspacs, projects, rbac and clusters to be created as required
@@ -116,7 +116,7 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: lazarus-gitops
+  name: phoenix-cluster-gitops
   namespace: kommander
 spec:
   interval:  5s
@@ -129,7 +129,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: lazarus-gitops
+  name: phoenix-cluster-gitops
   namespace: kommander
 spec:
   interval: 5s
@@ -137,6 +137,6 @@ spec:
   prune: true
   sourceRef:
    kind: GitRepository
-   name: lazarus-gitops
+   name: phoenix-cluster-gitops
    namespace: kommander
 EOF
