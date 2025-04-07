@@ -123,7 +123,7 @@ spec:
   ref:
     branch: main
   timeout: 20s
-  url: https://github.com/WinsonSou/lazarus-cluster-gitops-pro.git
+  url: https://github.com/WinsonSou/phoenix-cluster-gitops-pro.git
 ---
 #Configure FluxCD kustomize
 apiVersion: kustomize.toolkit.fluxcd.io/v1
