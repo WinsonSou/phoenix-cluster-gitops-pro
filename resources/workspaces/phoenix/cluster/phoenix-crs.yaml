@@ -1,0 +1,14 @@
+---
+apiVersion: addons.cluster.x-k8s.io/v1beta1
+kind: ClusterResourceSet
+metadata:
+  name: phoenix-crs
+  namespace: phoenix-workspace
+spec:
+  strategy: Reconcile
+  clusterSelector:
+    matchLabels:
+      konvoy.d2iq.io/cluster-name: phoenix-workload
+  resources:
+    - kind: ConfigMap
+      name: phoenix-crs-configmap

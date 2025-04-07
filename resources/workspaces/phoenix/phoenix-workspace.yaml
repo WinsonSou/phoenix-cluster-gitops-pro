@@ -1,0 +1,13 @@
+---
+apiVersion: workspaces.kommander.mesosphere.io/v1alpha1
+kind: Workspace
+metadata:
+  name: phoenix-workspace
+  annotations:
+    kommander.mesosphere.io/display-name: Phoenix Workspace
+    workspace.kommander.mesosphere.io/allow-existing-namespace: "true"
+  labels:
+    caren.nutanix.com/namespace-sync: ""
+    workspaces.kommander.mesosphere.io/can-use-global-infrastructure-provider: "true"
+spec:
+  namespaceName: phoenix-workspace

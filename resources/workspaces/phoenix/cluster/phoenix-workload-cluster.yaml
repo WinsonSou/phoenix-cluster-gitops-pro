@@ -1,0 +1,150 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: phoenix-workload
+    cluster.x-k8s.io/provider: nutanix
+    konvoy.d2iq.io/cluster-name: phoenix-workload
+    konvoy.d2iq.io/provider: nutanix
+    topology.cluster.x-k8s.io/owned: ""
+  name: phoenix-workload
+  #namespace has to match the workspace namespace
+  namespace: phoenix-workspace
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 192.168.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/12
+  controlPlaneEndpoint:
+    host: "10.168.102.44"
+    port: 6443
+  topology:
+    class: nkp-nutanix-v2.14.0
+    controlPlane:
+      metadata: {}
+      replicas: 3
+    variables:
+    - name: clusterConfig
+      value:
+        addons:
+          ccm:
+            credentials:
+              secretRef:
+                name: phoenix-workload-pc-credentials
+            strategy: HelmAddon
+          clusterAutoscaler:
+            strategy: HelmAddon
+          cni:
+            provider: Cilium
+            strategy: HelmAddon
+          csi:
+            defaultStorage:
+              provider: nutanix
+              storageClassConfig: volume
+            providers:
+              nutanix:
+                credentials:
+                  secretRef:
+                    name: phoenix-workload-pc-credentials-for-csi
+                storageClassConfigs:
+                  volume:
+                    allowExpansion: false
+                    parameters:
+                      csi.storage.k8s.io/fstype: ext4
+                      description: CSI StorageClass nutanix-volume for phoenix-workload
+                      hypervisorAttached: ENABLED
+                      storageContainer: SelfServiceContainer
+                      storageType: NutanixVolumes
+                    reclaimPolicy: Delete
+                    volumeBindingMode: WaitForFirstConsumer
+                strategy: HelmAddon
+            snapshotController:
+              strategy: HelmAddon
+          nfd:
+            strategy: HelmAddon
+          serviceLoadBalancer:
+            configuration:
+              addressRanges:
+              - start: 10.168.102.45
+                end: 10.168.102.45
+            provider: MetalLB
+        controlPlane:
+          nutanix:
+            machineDetails:
+              bootType: uefi
+              cluster:
+                name: WSKN-NONGPU
+                type: name
+              image:
+                name: nkp-rocky-9.5-release-1.31.4-20250214003015.qcow2
+                type: name
+              memorySize: 16Gi
+              project:
+                name: Default
+                type: name
+              subnets:
+              - name: NONGPU-Primary
+                type: name
+              systemDiskSize: 120Gi
+              vcpuSockets: 4
+              vcpusPerSocket: 1
+        encryptionAtRest:
+          providers:
+          - secretbox: {}
+        globalImageRegistryMirror:
+          credentials:
+            secretRef:
+              name: phoenix-workload-image-registry-mirror-credentials
+          url: https://registry.wskn.local/mirror
+        nutanix:
+          controlPlaneEndpoint:
+            host: 10.168.102.44
+            port: 6443
+            virtualIP:
+              provider: KubeVIP
+          prismCentralEndpoint:
+            credentials:
+              secretRef:
+                name: phoenix-workload-pc-credentials
+            insecure: true
+            url: https://10.168.100.4:9440
+        users:
+        - name: konvoy
+          sshAuthorizedKeys:
+          - |
+            ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLysPovN+Ves5lJfbLzeIwnoPzwrR1tuyudV2mhLMYAuz7WpQIeV9QSrXLWMdD137Q3KvoxtNPXuck4M+oheZsMIRqlmYoxxWDpfXLdKEIrRrE6XI6DFSUrcUw4fXLL+1NLThx5uWCerGFBHXY8f7VxhqkNb7DkZP9oCI0id2Qn8NzA3es5li5j8DVrip3XS/Y14URinX9AlDYzKJEtTH0O2S3xi5q4xLbO2yhAarVfBQK06j2XWVmAPw2fC+Ny2+zjP97Y7AmRNUC644mFCdgjnd/mpmdRshvUdJKy6wgOeTTYdVuAeuHifvyamNcYJ+HCYYj0NPE72Av5tUPXiqb/czwTMQ6NoAqoEVAK5CiheNVjOp6OU348nLXiuCTU2oA44jSMWAzefwbi/dc5rzvfMXCobdjaMIfI9AG/K2EMvQK7WtaSMs7PYYM7x6Njkntq4WErp+i6k2XYSHydobUZh5M2ta5jDc9CUxXI4/G75lOyuBJAWljzPODBy8htcc= root@WSKN-LINUX01          sudo: ALL=(ALL) NOPASSWD:ALL
+    version: v1.31.4
+    workers:
+      machineDeployments:
+      - class: default-worker
+        metadata:
+          annotations:
+            cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "4"
+            cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "4"
+        name: md-0
+        variables:
+          overrides:
+          - name: workerConfig
+            value:
+              nutanix:
+                machineDetails:
+                  bootType: uefi
+                  cluster:
+                    name: WSKN-NONGPU
+                    type: name
+                  image:
+                    name: nkp-rocky-9.5-release-1.31.4-20250214003015.qcow2
+                    type: name
+                  memorySize: 32Gi
+                  project:
+                    name: Default
+                    type: name
+                  subnets:
+                  - name: NONGPU-Primary
+                    type: name
+                  systemDiskSize: 120Gi
+                  vcpuSockets: 8
+                  vcpusPerSocket: 1

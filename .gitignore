@@ -1,0 +1,8 @@
+*[cC][rR][eE][dD][eE][nN][tT][iI][aA][lL][sS]*
+*credentials*
+
+
+#keep anything with example
+
+#keep sealed secrets
+!*.sealed.yaml
