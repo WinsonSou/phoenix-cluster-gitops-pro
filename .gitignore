@@ -5,4 +5,4 @@
 #keep anything with example
 
 #keep sealed secrets
-!*.sealed.yaml
+!*sealed.yaml
