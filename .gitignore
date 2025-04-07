@@ -6,3 +6,4 @@
 
 #keep sealed secrets
 !*sealed.yaml
+!*credentials*.sh

@@ -1,0 +1,17 @@
+cat << EOF > phoenix-workload-image-registry-mirror-credentials.yaml
+apiVersion: v1
+data:
+  ca.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJhVENDQVE2Z0F3SUJBZ0lSQVBLQS8yWFB6bVVKT0pYbWh2Tzk0c293Q2dZSUtvWkl6ajBFQXdJd0VqRVEKTUE0R0ExVUVBeE1IZDNOcmJpMWpZVEFlRncweU5UQXlNVGd3T0RBMU16aGFGdzB6TlRBeU1UZ3lNREExTXpoYQpNQkl4RURBT0JnTlZCQU1UQjNkemEyNHRZMkV3V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVFiCnpNMXhRdVZGS2NIV3d3M1RwUU9MMEZ3eTZpcVF3ZERMalgwMmprclFWZHI2bmZRTEJDSjcyc25vNmZzOFFyTU4KaU9tTjVCSUVEWlJid0xLd1QvMGJvMFV3UXpBT0JnTlZIUThCQWY4RUJBTUNBUVl3RWdZRFZSMFRBUUgvQkFndwpCZ0VCL3dJQkFUQWRCZ05WSFE0RUZnUVVRTzBHYjRaMFJCS0UwRm1CNnZ2em5wd3FVczB3Q2dZSUtvWkl6ajBFCkF3SURTUUF3UmdJaEFPMDZMbkdmTXlxN08rZWU1RGxYbGVyZEdKYmc3eVd1YmhhMVFxUElUVVZ0QWlFQTl4RFAKbDRFVENQTmwxY01CWkZjd1pFU2RrN2ZDTC9UVnRMaElSVXg1NHdJPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+  password: dGVzdAo=
+  username: dGVzdAo=
+kind: Secret
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: phoenix-workload
+    cluster.x-k8s.io/provider: nutanix
+  name: phoenix-workload-image-registry-mirror-credentials
+  namespace: phoenix-workspace
+type: Opaque
+EOF
+
+kubeseal --format yaml --scope cluster-wide < phoenix-workload-image-registry-mirror-credentials.yaml > phoenix-workload-image-registry-mirror-credentials-sealed.yaml
